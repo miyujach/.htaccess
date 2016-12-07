@@ -1,0 +1,270 @@
+Options +FollowSymlinks
+Options -Indexes
+ 
+######################################
+# BEGIN Reecriture D'URL
+######################################
+#
+# PLUS D'INFOS SUR
+# https://craym.eu/tutoriels/referencement/url_rewriting.html
+#
+
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+
+	# Redirection avec www
+	RewriteCond %{HTTP_HOST} ^agence-web-elium.fr$
+	RewriteRule ^(.*) https://www.agence-web-elium.fr/$1 [QSA,L,R=301]
+
+	RewriteCond %{HTTPS} off
+	RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R,L]
+
+	# Redirection sans www | DEV Uniquement
+	#RewriteCond %{HTTP_HOST} ^www.site-dev.local.fr$
+	#RewriteRule ^(.*) http://site-dev.local.fr/$1 [QSA,L,R=301]
+
+	# NE PAS TOUCHER
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^(.*)$ web/$1 [QSA,L]
+	
+</IfModule>
+######## END Reecriture D'URL ########
+######################################
+
+
+
+#
+# PLUS D'INFOS SUr
+# https://www.creativejuiz.fr/blog/tutoriels/mettre-en-cache-les-fichiers-statiques-de-votre-site-web-htaccess
+#
+
+
+######################################
+# BEGIN Interdiction de la lecture du .htaccess depuis l'exterieur
+######################################
+<Files .htaccess>
+	order allow,deny
+	deny from all
+</Files>
+######## END Interdiction de la lecture du .htaccess depuis l'exterieur ########
+################################################################################
+
+
+######################################
+# BEGIN Expire headers
+######################################
+<IfModule mod_expires.c>
+	ExpiresActive On
+	ExpiresDefault "access plus 7200 seconds"
+	ExpiresByType image/jpg									"access plus 1 week"
+	ExpiresByType image/jpeg								"access plus 1 week"
+	ExpiresByType image/png									"access plus 1 week"
+	ExpiresByType image/gif									"access plus 1 week"
+	ExpiresByType image/svg+xml								"access plus 1 week"
+	AddType image/x-icon .ico
+	ExpiresByType image/ico									"access plus 1 week"
+	ExpiresByType image/icon								"access plus 1 week"
+	ExpiresByType image/x-icon								"access plus 1 week"
+	ExpiresByType text/css									"access plus 1 week"
+	ExpiresByType text/javascript							"access plus 1 week"
+	ExpiresByType text/html									"access plus 7200 seconds"
+	ExpiresByType application/xhtml+xml						"access plus 7200 seconds"
+	ExpiresByType application/javascript					"access plus 1 week"
+	ExpiresByType application/x-javascript					"access plus 1 week"
+	ExpiresByType application/x-shockwave-flash				"access plus 1 week"
+</IfModule>
+
+######## END Expire headers ########
+####################################
+
+
+
+
+
+
+######################################
+# BEGIN Cache-Control Headers &&&& Content Security Policy &&&& X-XSS-Protection
+######################################
+
+<IfModule mod_headers.c>
+
+	<FilesMatch "\\.(ico|jpe?g|png|gif|swf|gz)$">
+		Header set Cache-Control "max-age=2592000, public"
+	</FilesMatch>
+
+	<FilesMatch "\\.(css)$">
+		Header set Cache-Control "max-age=604800, public"
+	</FilesMatch>
+
+	<FilesMatch "\\.(js)$">
+		Header set Cache-Control "max-age=216000, private"
+	</FilesMatch>
+
+	<filesMatch "\\.(x?html?|php)$">
+		Header set Cache-Control "max-age=600, private, must-revalidate"
+	</filesMatch>
+
+
+
+	##  HEADER RULES  ##
+	##  HEADER RULES  ##
+	##  HEADER RULES  ##
+	
+	
+	
+	# BEGIN X-XSS-Protection
+	# PLUS D'INFOS SUR http://stopmalvertising.com/security/securing-your-website-with-.htaccess/.htaccess-http-headers.html #
+		Header set X-XSS-Protection "1; mode=block"
+		Header set X-Content-Type-Options: "nosniff”
+	######## END X-XSS-Protection ########
+	
+	# BEGIN ETag
+		Header unset ETag
+		FileETag none
+	######## END ETag ########
+		
+	# BEGIN Cookie // Desactivation
+	######################################
+		Header unset Set-Cookie
+	######## END Cookie // Desactivation ########
+	
+	
+	# BEGIN Cache la technologie du serveur
+	# https://techglimpse.com/set-modify-response-headers-http-tip/ #
+		Header unset Server
+		Header always unset X-Powered-By
+		Header unset X-Powered-By
+		Header unset X-CF-Powered-By
+		Header unset X-Mod-Pagespeed
+		Header unset X-Pingback
+
+	######## END Cacher la technologie du serveur ########
+	
+
+	# BEGIN Content Security Policy
+	# PLUS D'INFOS SUR https://ole.michelsen.dk/blog/secure-your-website-with-content-security-policy.html #
+		Header always set Content-Security-Policy: upgrade-insecure-requests
+
+		Header set Content-Security-Policy " \
+			default-src \
+			   'self' \
+			   https: 'unsafe-inline'; \
+		   script-src \
+			   'self' \
+			   'unsafe-inline' \
+			   https://www.google-analytics.com \
+			   https://www.google.com \
+			   https://www.youtube.com \
+			   https://maps.googleapis.com \
+			   https://www.gstatic.com/ \
+			   https://s.ytimg.com/; \
+		   style-src \
+			   'self' \
+			   'unsafe-inline' \
+			   https://fonts.googleapis.com; \
+		   frame-src \
+			   'self' \
+			   'unsafe-inline' \
+			   https://www.google.com/ \
+			   https://www.youtube.com; \
+		   img-src \
+			   'self' \
+			   'unsafe-inline' \
+			   https://www.google-analytics.com \
+			   https://maps.googleapis.com \
+			   https://csi.gstatic.com/ \
+			   https://maps.gstatic.com/; \
+		   font-src \
+			   'self' \
+			   'unsafe-inline' \
+			   https://www.gstatic.com/ \
+			   http://fonts.gstatic.com/ \
+			   https://fonts.googleapis.com; \
+		"
+	######## END Content Security Policy ########
+
+</IfModule>
+
+######## END Cache-Control Headers &&&& Content Securty Policy &&&& X-XSS-Protection ########
+#############################################################################################
+
+
+
+
+
+######################################
+#DEFLATE mod ---- https://css-tricks.com/snippets/htaccess/active-gzip-compression/
+######################################
+
+<IfModule mod_filter.c>
+AddOutputFilterByType DEFLATE \
+	"application/atom+xml" \
+	"application/javascript" \
+	"application/json" \
+	"application/ld+json" \
+	"application/manifest+json" \
+	"application/rdf+xml" \
+	"application/rss+xml" \
+	"application/schema+json" \
+	"application/vnd.geo+json" \
+	"application/vnd.ms-fontobject" \
+	"application/x-javascript" \
+	"application/x-web-app-manifest+json" \
+	"application/xhtml+xml" \
+	"application/xml" \
+	"image/bmp" \
+	"image/svg+xml" \
+	"image/vnd.microsoft.icon" \
+	"image/x-icon" \
+	"text/cache-manifest" \
+	"text/css" \
+	"text/html" \
+	"text/javascript" \
+	"text/plain" \
+	"text/vcard" \
+	"text/vnd.rim.location.xloc" \
+	"text/vtt" \
+	"text/x-component" \
+	"text/x-cross-domain-policy" \
+	"text/xml" \
+	"application/x-font-ttf .ttf" \
+	"application/x-font-woff .woff" \
+	"application/x-font-opentype .otf" \
+	"application/vnd.ms-fontobject .eot" \
+
+	#"font/eot" \
+	#"font/opentype" \
+	#"image/svg+xml .svg"
+	#"application/x-font-opentype .otf" \
+	#"application/vnd.ms-fontobject .eot" \
+	#"application/x-font-ttf .ttf" \
+
+
+	#Pour les navigateurs incompatibles
+	BrowserMatch ^Mozilla/4 gzip-only-text/html
+	BrowserMatch ^Mozilla/4\.0[678] no-gzip
+	BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+	BrowserMatch \bMSI[E] !no-gzip !gzip-only-text/html
+	
+	#ne pas mettre en cache si ces fichiers le sont déjà
+	SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip
+	
+	#les proxies doivent donner le bon contenu
+	Header append Vary User-Agent env=!dont-vary
+</IfModule>
+
+######## END DEFLATE ########
+#############################
+
+
+
+
+
+######################################
+# BEGIN Désactivation signature serveur
+######################################
+
+ServerSignature Off
+
+######## END Désactivation signature serveur ########
+#####################################################
