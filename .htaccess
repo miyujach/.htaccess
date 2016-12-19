@@ -91,6 +91,10 @@ Options -Indexes
 	<FilesMatch "\\.(ico|jpe?g|png|gif|swf|gz)$">
 		Header set Cache-Control "max-age=2592000, public"
 	</FilesMatch>
+	
+	<FilesMatch "\\.(woff|ttf|otf|eot|svg)$">
+		Header set Cache-Control "max-age=2592000, public"
+	</FilesMatch>
 
 	<FilesMatch "\\.(css)$">
 		Header set Cache-Control "max-age=604800, public"
